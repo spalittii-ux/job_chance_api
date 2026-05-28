@@ -62,10 +62,14 @@ $user_id = $con->lastInsertId();
 
 echo json_encode([
     "status" => "success",
-    "user_id" =>(int) $user_id,
+    "message" => "Registration successful. Verification code returned for testing only.",
+    "user_id" => (int) $user_id,
     "username" => $name,
-    "role" => "user"
-]);
+    "role" => "user",
+
+    // للتجربة فقط — احذف هذا السطر لاحقاً
+    "verification_code" => (string) $verifycode
+], JSON_UNESCAPED_UNICODE);
     
 } else {
     echo json_encode([

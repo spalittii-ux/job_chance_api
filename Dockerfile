@@ -8,6 +8,5 @@ RUN apt-get update \
 WORKDIR /app
 COPY . /app
 
-RUN mkdir -p /app/upload/profile /app/upload/providers /app/upload/requests
-
-CMD php -S 0.0.0.0:${PORT:-8080} -t /app
+CMD mkdir -p /app/upload/profile /app/upload/providers /app/upload/requests \
+    && php -S 0.0.0.0:${PORT:-8080} -t /app
