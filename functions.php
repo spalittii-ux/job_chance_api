@@ -33,14 +33,9 @@ function uploadImage($imageRequest, $folder) {
         return "size_error";
     }
 
-    // اسم آمن وفريد للصورة
     $imageName = uniqid("img_", true) . "." . $ext;
 
-    // مهم جداً على Railway:
-    // functions.php موجود بجذر المشروع /app
-    // والـ Volume لازم يكون على /app/upload
-    $uploadBase = __DIR__ . "/upload";
-    $targetDir  = $uploadBase . "/" . $folder;
+    $targetDir = __DIR__ . "/upload/" . $folder;
 
     if (!is_dir($targetDir)) {
         mkdir($targetDir, 0775, true);
