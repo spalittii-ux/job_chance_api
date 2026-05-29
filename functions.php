@@ -11,34 +11,48 @@ function filterRequest($data, $key) {
 //     mail($to , $title , $body ,$header);
 // } 
 
-function uploadImage($imageRequest, $folder){
+function uploadImage($imageRequest, $folder) {
 
-    if(!isset($_FILES[$imageRequest])){
-        return "noimage.png";
+    if (!isset($_FILES[$imageRequest]) || $_FILES[$imageRequest]['error'] !== UPLOAD_ERR_OK) {
+        return null;
     }
 
-    $imagename = rand(1000,100000) . "_" . $_FILES[$imageRequest]['name'];
-    $imagetmp  = $_FILES[$imageRequest]['tmp_name'];
-    $imagesize = $_FILES[$imageRequest]['size'];
+    $originalName = $_FILES[$imageRequest]['name'];
+    $imageTmp     = $_FILES[$imageRequest]['tmp_name'];
+    $imageSize    = $_FILES[$imageRequest]['size'];
 
-    $allowExt = array("jpg","png","jpeg","gif");
+    $allowedExt = ["jpg", "jpeg", "png", "gif", "webp"];
 
-    $strToArray = explode(".", $imagename);
-    $ext = strtolower(end($strToArray));
+    $ext = strtolower(pathinfo($originalName, PATHINFO_EXTENSION));
 
-    if(!in_array($ext , $allowExt)){
+    if (!in_array($ext, $allowedExt)) {
         return "type_error";
     }
 
-    if($imagesize > 5 * 1024 * 1024){
+    if ($imageSize > 5 * 1024 * 1024) {
         return "size_error";
     }
 
-    $path = "../upload/" . $folder . "/" . $imagename;
+    // اسم آمن وفريد للصورة
+    $imageName = uniqid("img_", true) . "." . $ext;
 
-    move_uploaded_file($imagetmp , $path);
+    // مهم جداً على Railway:
+    // functions.php موجود بجذر المشروع /app
+    // والـ Volume لازم يكون على /app/upload
+    $uploadBase = __DIR__ . "/upload";
+    $targetDir  = $uploadBase . "/" . $folder;
 
-    return $imagename;
+    if (!is_dir($targetDir)) {
+        mkdir($targetDir, 0775, true);
+    }
+
+    $targetPath = $targetDir . "/" . $imageName;
+
+    if (!move_uploaded_file($imageTmp, $targetPath)) {
+        return "upload_error";
+    }
+
+    return $imageName;
 }
 function createNotification(
     $con,
