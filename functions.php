@@ -40,3 +40,34 @@ function uploadImage($imageRequest, $folder){
 
     return $imagename;
 }
+function createNotification(
+    $con,
+    $userId,
+    $title,
+    $body,
+    $type,
+    $requestId = null,
+    $matchId = null
+) {
+    $stmt = $con->prepare("
+        INSERT INTO notifications 
+        (
+            user_id,
+            title,
+            body,
+            type,
+            related_request_id,
+            related_match_id
+        )
+        VALUES (?, ?, ?, ?, ?, ?)
+    ");
+
+    return $stmt->execute([
+        $userId,
+        $title,
+        $body,
+        $type,
+        $requestId,
+        $matchId
+    ]);
+}
